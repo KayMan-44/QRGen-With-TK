@@ -1,29 +1,25 @@
 import tkinter as tk
 from QR import Generate_QR
-
+from PIL import Image, ImageTk
 
 class WindowWidget:
-    def __init__(self, win):
+    def __init__(self,win):
         self.lbl1 = tk.Label(win, text="QR Generator")
         self.lbl2 = tk.Label(win, text="Enter a link:")
         self.lbl3 = tk.Label(win, text="Enter a name:")
         self.lbl4 = tk.Label(win, text="QR Code Generated!")
         self.lbl5 = tk.Label(win, text="Both link and name are required")
-
-        # Link
+        self.image_Label = tk.Label(win)
+        
+        #Link
         self.entry_Var = tk.StringVar()
         self.LinkEntry = tk.Entry(win, textvariable=self.entry_Var)
-
-        # Name
+        #Name
         self.entry_Var2 = tk.StringVar()
         self.nameEntry = tk.Entry(win, textvariable=self.entry_Var2)
-
-        # Button
-        self.QRButton = tk.Button(
-            win, text="Generate QR image", command=self.generate_QR_pressed
-        )
-
-        # Placement
+        #Button
+        self.QRButton = tk.Button(win, text="Generate QR image", command=self.generate_QR_pressed)
+        #Placement
         self.lbl1.pack()
         self.lbl2.pack()
         self.LinkEntry.pack()
@@ -32,24 +28,31 @@ class WindowWidget:
         self.QRButton.pack()
         self.lbl4.pack_forget()
         self.lbl5.pack_forget()
-
+        self.image_Label.pack_forget()   
+        
     def generate_QR_pressed(self):
         link = self.entry_Var.get()
         name = self.entry_Var2.get()
         if link and name:
             filename = name + ".png"
             Generate_QR(link, filename)
+            img = Image.open(filename)
+            self.image_ref = ImageTk.PhotoImage(img)
+            self.image_Label.config(image=self.image_ref)
             self.lbl4.pack()
+            self.image_Label.pack()
             self.lbl5.pack_forget()
         else:
             print("Both link and name are required.")
             self.lbl5.pack()
             self.lbl4.pack_forget()
-
-
+            self.image_Label.pack_forget()
+          
 window = tk.Tk()
 window.title("QRGen")
-window.geometry("800x600+10+10")
+window.geometry('800x600+10+10')
 Widget_Win = WindowWidget(window)
+win_Icon = tk.PhotoImage(file="QRgenICON.png")
+window.iconphoto(True, win_Icon)
 
 window.mainloop()
